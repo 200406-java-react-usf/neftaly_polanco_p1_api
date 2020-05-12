@@ -1,0 +1,33 @@
+  1. Create a repository that will house your application
+    - Variations:
+      + you can create 1 repository that holds both the API and the UI, but keep them on separate branchs
+      + you can create 2 repositories, one for the API and another for the UI
+      + DO NOT KEEP THE SOURCE CODE LOGIC FOR THE API AND UI IN THE SAME FOLDER
+  2. Make an initial commit with basic project structure to the repositories
+    - Don't overthink this: 
+      + Make a simple Express API with a exposed test endpoint, commit and push
+      + Make a simple UI with a index.html, commit and push
+  3. Create an AWS Elastic Beanstalk application that will be used to deploy the Express API
+    - Environment: NodeJS 12
+    - Start it up with the sample application that AWS suggests by default
+  4. Add environment variables to the EB application
+    - EB application instantiation must be complete
+    - Go to the application dashboard and choose "Configuration", click "Edit" for the Software configuration option
+    - Scroll down to "Environment properties" and add all required variables
+  5. Create an AWS S3 bucket that will be used to host the UI application
+    - The S3 bucket must be configured properly for static web hosting 
+  6. Create a buildspec.yml for the API and push it to the repository
+    - See revaboards-ui for reference
+  7. Create a buildspec.yml for the UI application and push it to the repository
+    - See revaboards for reference
+  8. Use AWS CodePipeline to create the CI/CD pipeline for the UI
+    - Only needs two stages: Source and Build
+    - Follow AWS Console prompts to setup pipeline
+    - Source: Github, choose your repository and the proper branch
+    - Build: CodeBuild, follow prompts to create build project
+  9. Use AWS CodePipeline to create the CI/CD pipeline for the API
+    - Needs three stages: Source, Build, and Deploy
+    - Follow AWS Console prompts to setup pipeline
+    - Source: Github, choose your repository and the proper branch
+    - Build: CodeBuild, follow prompts to create build project
+    - Deploy: Elastic Beanstalk, choose the application you created earlier
