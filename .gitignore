@@ -1,6 +1,4 @@
 node_modules/
 package-lock.json
 build/
-coverage/
-P0Script.sql
 .env
