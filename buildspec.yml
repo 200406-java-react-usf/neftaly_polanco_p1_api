@@ -11,5 +11,11 @@ phases:
     commands:
       - npm run build
   post_build:
-    commands:
-      - aws s3 sync ./build s3://nef-bucket-200406-java-react
+     commands:
+      - echo Build completed on `date`
+
+artifacts:
+  files:
+    - node_modules/**/*
+    - ./build/**/*
+    - package.json
