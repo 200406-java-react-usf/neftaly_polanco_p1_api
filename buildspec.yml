@@ -1,6 +1,4 @@
-  
 version: 0.2
-
 phases:
   install:
     runtime-versions:
@@ -8,16 +6,10 @@ phases:
   pre_build:
     commands:
       - npm install
-      - npm run test
+      - echo "We would use 'npm test' here to run our tests (if we had any)"
   build:
     commands:
       - npm run build
   post_build:
     commands:
-      - echo Build completed on `date`
-
-artifacts:
-  files:
-    - node_modules/**/*
-    - ./build/**/*
-    - package.json
+      - aws s3 sync ./build s3://nef-bucket-200406-java-react
