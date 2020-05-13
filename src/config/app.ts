@@ -9,7 +9,14 @@ const userService = new UserService(userRepo);
 const reimbRepo = new ReimbursementRepository();
 const reimbursementService = new ReimbursementService(reimbRepo);
 
+<<<<<<< HEAD
 export {
     userService,
     reimbursementService
 }
+=======
+export default {
+    userService,
+    reimbursementService
+}
+>>>>>>> 4d7016c86a4509448c9b9a51a04207a6ecfa73c9

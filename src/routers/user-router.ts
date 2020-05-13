@@ -79,7 +79,7 @@ UserRouter.delete('/:id', adminGuard, async (req, resp) => {
     console.log('USER DELETE REQUEST RECEIVED AT /users');
     console.log(req.body);
     try {
-        let status = await userService.deleteById(id);
+        let status = await userService.deleteUserById(id);
         return resp.status(204).json(status).send();
     } catch (e) {
         return resp.status(e.statusCode).json(e).send();
