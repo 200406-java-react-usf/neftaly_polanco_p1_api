@@ -46,8 +46,8 @@ describe('userRepo', () => {
                                 username: 'lreddick',
                                 password: 'password',
                                 first_name: 'Lance',
-                                last_name: 'Reddick',
-                                phone: '(257) 273-4567',                               email: 'aanderson@revature.com',
+                                last_name: 'Reddick',                               
+                                email: 'aanderson@revature.com',
                                 role_id: 1
                             }
                         ]
@@ -64,7 +64,7 @@ describe('userRepo', () => {
         // Arrange
         expect.hasAssertions();
 
-        let mockUser = new User(1, 'un', 'pw', 'fn', 'ln', 'phone', 'email', 'locked');
+        let mockUser = new User(1, 'un', 'pw', 'fn', 'ln', 'email', 'locked');
         (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
 
         // Act
@@ -105,7 +105,7 @@ describe('userRepo', () => {
         // Arrange
         expect.hasAssertions();
 
-        let mockUser = new User(1, 'un', 'pw', 'fn', 'ln', 'phone', 'email', 'locked');
+        let mockUser = new User(1, 'un', 'pw', 'fn', 'ln', 'email', 'locked');
         (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
 
         // Act
@@ -122,7 +122,7 @@ describe('userRepo', () => {
         // Arrange
         expect.hasAssertions();
 
-        let mockUser = new User(1, 'un', 'pw', 'fn', 'ln', 'phone', 'email', 'locked');
+        let mockUser = new User(1, 'un', 'pw', 'fn', 'ln', 'email', 'locked');
         (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
 
         // Act
@@ -139,7 +139,7 @@ describe('userRepo', () => {
         // Arrange
         expect.hasAssertions();
 
-        let mockUser = new User(1, 'un', 'pw', 'fn', 'ln', 'phone', 'email', 'locked');
+        let mockUser = new User(1, 'un', 'pw', 'fn', 'ln', 'email', 'locked');
          (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
 
         // Act
@@ -156,7 +156,7 @@ describe('userRepo', () => {
         // Arrange
         expect.hasAssertions();
     
-        let mockUser = new User(1, 'un', 'pw', 'fn', 'ln', 'phone', 'email', 'locked');
+        let mockUser = new User(1, 'un', 'pw', 'fn', 'ln', 'email', 'locked');
         (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
     
         // Act
