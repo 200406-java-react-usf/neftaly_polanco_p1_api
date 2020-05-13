@@ -105,6 +105,26 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
 
     /**
      * 
+     * @param key 
+     * @param val 
+     */
+    async getReimbursementByUniqueKey(key: string, val: string): Promise<Reimbursement> {
+        let client: PoolClient;
+        
+        try {
+            client = await connectionPool.connect();
+            let sql = `${this.baseQuery} where eu.${key} = $1`;
+            let rs = await client.query(sql, [val]);
+            return mapReimbursementResultSet(rs.rows[0]);
+        } catch (e) {
+            throw new InternalServerError();
+        } finally {
+            client && client.release();
+        }
+    }
+
+    /**
+     * 
      * @param updatedReimbursement 
      */
     async update(updatedReimbursement: Reimbursement): Promise<boolean> {
@@ -115,8 +135,9 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
             
             let sql = `
                 update ers_reimbursement
-                set amount = $2, submitted = $3, resolved = $4, description = $5, receipt = $6, author_id = $7, resolver_id = $8, reimb_status_id = $9, reimb_type_id = $10
-                where ers_reimbursement.id = $1;
+                    set amount = $2, submitted = $3, resolved = $4, description = $5, receipt = $6,
+                    author_id = $7, resolver_id = $8, reimb_status_id = $9, reimb_type_id = $10
+                where ers_reimbursement.reimb_id = $1;
             `;
 
             await client.query(sql, [updatedReimbursement.amount, updatedReimbursement.submitted, 

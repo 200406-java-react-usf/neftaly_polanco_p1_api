@@ -3,7 +3,8 @@ import { ReimbursementRepository }  from '../repos/reimbursement-repo';
 import { 
     isValidId, 
     isValidObject, 
-    isEmptyObject 
+    isEmptyObject, 
+    isPropertyOf
 } from '../util/validator';
 import { BadRequestError,  ResourceNotFoundError } from '../errors/errors';
 
@@ -59,6 +60,46 @@ export class ReimbursementService {
 
     /**
      * 
+     * @param queryObj 
+     */
+    async getReimbursementByUniqueKey(queryObj: any): Promise<Reimbursement> {
+
+        try {
+            let queryKeys = Object.keys(queryObj);
+
+            if(!queryKeys.every(key => isPropertyOf(key, Reimbursement))) {
+                throw new BadRequestError();
+            }
+
+            //searching by only one key (at least for now)
+            let key = queryKeys[0];
+            let val = queryObj[key];
+
+            //reuse getById logic if given key is id
+            if (key === 'id') {
+                return await this.getReimbursementById(+val);
+            }
+
+            // throw error if key value is not valid
+            if(!isValidId(val)) {
+                throw new BadRequestError();
+            }
+
+            let reimbursement = await this.reimbursementRepo.getReimbursementByUniqueKey(key, val);
+            
+            if(isEmptyObject(reimbursement)) {
+                throw new ResourceNotFoundError();
+            }
+
+            return reimbursement;
+
+        } catch (e) {
+        throw e;
+        }
+    }
+
+    /**
+     * 
      * @param newReimbursement 
      */
     async addNewReimbursement(newReimbursement: Reimbursement): Promise<Reimbursement> {
@@ -83,14 +124,12 @@ export class ReimbursementService {
      * @param id 
      * @param updatedReimbursement 
      */
-    async updateReimbursement(id: number, updatedReimbursement: Reimbursement): Promise<boolean> {
+    async updateReimbursement(updatedReimbursement: Reimbursement): Promise<boolean> {
         
         if (!isValidObject(updatedReimbursement)) {
             throw new BadRequestError('Invalid reimbursement provided.');
         }
-
-        updatedReimbursement.id = id;
-
+        
         return await this.reimbursementRepo.update(updatedReimbursement);
 
     }
