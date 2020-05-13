@@ -8,7 +8,8 @@ const userService = new UserService(userRepo);
 
 const reimbRepo = new ReimbursementRepository();
 const reimbursementService = new ReimbursementService(reimbRepo);
-export {
+
+export default {
     userService,
     reimbursementService
 }
