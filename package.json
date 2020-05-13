@@ -1,7 +1,7 @@
 {
-  "name": "project_1",
+  "name": "neftaly_polanco_p1",
   "version": "1.0.0",
-  "description": "",
+  "description": "project 1",
   "main": "./build/index.js",
   "scripts": {
     "start": "node ./build/index.js",
@@ -14,8 +14,6 @@
   "author": "Neftaly Polanco",
   "license": "ISC",
   "dependencies": {
-    "@types/pg": "^7.14.3",
-    "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
@@ -26,6 +24,7 @@
     "@types/express-session": "^1.17.0",
     "@types/jest": "^25.2.1",
     "@types/node": "^12.12.37",
+    "@types/pg": "^7.14.3",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
     "eslint": "^6.8.0",
