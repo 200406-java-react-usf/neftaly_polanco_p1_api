@@ -1,4 +1,5 @@
 version: 0.2
+
 phases:
   install:
     runtime-versions:
@@ -6,12 +7,12 @@ phases:
   pre_build:
     commands:
       - npm install
-      - echo "We would use 'npm test' here to run our tests (if we had any)"
+      # - npm run test
   build:
     commands:
       - npm run build
   post_build:
-     commands:
+    commands:
       - echo Build completed on `date`
 
 artifacts:
@@ -19,3 +20,4 @@ artifacts:
     - node_modules/**/*
     - ./build/**/*
     - package.json
+    - .vsccode/**/*
