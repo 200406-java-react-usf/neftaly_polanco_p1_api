@@ -1,4 +1,4 @@
-import { UserRepository } from '../repos/ers-user-repo';
+import { UserRepository } from '../repos/user-repo';
 import * as mockIndex from '..';
 import * as mockMapper from '../util/result-set-mapper';
 import { User } from '../models/user';
