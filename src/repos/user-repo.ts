@@ -3,7 +3,7 @@ import { CrudRepository } from './crud-repo';
 import { InternalServerError } from '../errors/errors';
 import { PoolClient } from 'pg';
 import { connectionPool } from '..';
-import { mapUserResultSet } from '../util/user-result-set-mapper';
+import { mapUserResultSet } from '../util/result-set-mapper';
 
 /**
  * 
@@ -123,7 +123,7 @@ export class UserRepository implements CrudRepository<User> {
                 newUser.firstName, newUser.lastName,  
                 newUser.email, role_id]));
 
-            newUser.user_role_id = rs.rows[0].role_id;
+            newUser.role_name = rs.rows[0].role_name;
 
             return newUser;
 
