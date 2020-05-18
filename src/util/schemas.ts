@@ -23,6 +23,6 @@ export interface ReimbursementSchema {
     receipt: number;
     author: string;
     resolver: string;
-    reimb_status_id: number;
-    reimb_type_id: number;
+    reimb_status: string;
+    reimb_type: string;
 }
