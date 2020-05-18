@@ -2,7 +2,7 @@ import url from 'url';
 import express from 'express';
 import AppConfig from '../config/app';
 import { isEmptyObject } from '../util/validator';
-import { adminGuard } from '../middleware/auth-middleware';
+import { adminGuard, FMGuard } from '../middleware/auth-middleware';
 
 export const ReimbursementRouter = express.Router();
 
@@ -42,22 +42,22 @@ ReimbursementRouter.get('/:id', async (req, resp) => {
 /**
  * 
  */
-ReimbursementRouter.post('', adminGuard, async (req, resp) => {
+ReimbursementRouter.post('', async (req, resp) => {
 
     console.log('REIMBURSEMENT POST REQUEST RECEIVED AT /reimbursements');
-    console.log(req.body);
+    //console.log(req.body);
     try {
         let newReimbursement = await reimbursementService.addNewReimbursement(req.body);
-        return resp.status(201).json(newReimbursement).send();
+        return resp.status(201).json(newReimbursement);
     } catch (e) {
-        return resp.status(e.statusCode).json(e).send();
+        return resp.status(e.statusCode).json(e);
     }
 });
 
 /**
  * 
  */
-ReimbursementRouter.put('/:id', adminGuard, async (req, resp) => {
+ReimbursementRouter.put('/:id', FMGuard, async (req, resp) => {
     const id = +req.params.id;
 
     console.log('REIMBURSEMENT UPDATE REQUEST RECEIVED AT /reimbursements');
@@ -73,7 +73,7 @@ ReimbursementRouter.put('/:id', adminGuard, async (req, resp) => {
 /**
  * 
  */
-ReimbursementRouter.delete('/:id', adminGuard, async (req, resp) => {
+ReimbursementRouter.delete('/:id', FMGuard, async (req, resp) => {
     const id = +req.params.id;
 
     console.log('REIMBURSEMENT DELETE REQUEST RECEIVED AT /reimbursements');

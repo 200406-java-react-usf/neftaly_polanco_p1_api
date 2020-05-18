@@ -8,9 +8,7 @@ import {
 } from '../util/validator';
 import { BadRequestError,  ResourceNotFoundError } from '../errors/errors';
 
-/**
- * 
- */
+
 export class ReimbursementService {
     
     constructor(private reimbursementRepo: ReimbursementRepository) {
@@ -18,7 +16,8 @@ export class ReimbursementService {
     }
 
     /**
-     * 
+     * Get all reimbursements
+     * @returns all reimbursments
      */
     async getAllReimbursements(): Promise<Reimbursement[]> {
 
@@ -33,8 +32,9 @@ export class ReimbursementService {
     }
 
     /**
-     * 
+     * Get reimbursements by their id
      * @param id 
+     * @returns reimbursements by id
      */
     async getReimbursementById(id: number): Promise<Reimbursement> {
 
@@ -59,8 +59,9 @@ export class ReimbursementService {
     }
 
     /**
-     * 
+     * get reimbursements by unique key
      * @param queryObj 
+     * @returns reimbursements by unique key
      */
     async getReimbursementByUniqueKey(queryObj: any): Promise<Reimbursement> {
 
@@ -79,12 +80,8 @@ export class ReimbursementService {
             if (key === 'id') {
                 return await this.getReimbursementById(+val);
             }
-
-            // throw error if key value is not valid
-            if(!isValidId(val)) {
-                throw new BadRequestError();
-            }
-
+            
+            
             let reimbursement = await this.reimbursementRepo.getReimbursementByUniqueKey(key, val);
             
             if(isEmptyObject(reimbursement)) {
@@ -99,8 +96,9 @@ export class ReimbursementService {
     }
 
     /**
-     * 
+     * adds new reimbursement
      * @param newReimbursement 
+     * @returns save newReimbursement
      */
     async addNewReimbursement(newReimbursement: Reimbursement): Promise<Reimbursement> {
             
@@ -120,9 +118,10 @@ export class ReimbursementService {
     }
 
     /**
-     * 
+     * Update an existing reimbursement
      * @param id 
      * @param updatedReimbursement 
+     * @returns updatedReimbursement
      */
     async updateReimbursement(updatedReimbursement: Reimbursement): Promise<boolean> {
         
@@ -135,8 +134,9 @@ export class ReimbursementService {
     }
 
     /**
-     * 
+     * deletes the reimbursement matching the provided Id
      * @param id 
+     * returns true
      */
     async deleteById(id: number): Promise<boolean> {
         

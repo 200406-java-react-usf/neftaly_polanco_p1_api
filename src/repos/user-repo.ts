@@ -5,27 +5,26 @@ import { PoolClient } from 'pg';
 import { connectionPool } from '..';
 import { mapUserResultSet } from '../util/result-set-mapper';
 
-/**
- * 
- */
+
 export class UserRepository implements CrudRepository<User> {
 
     baseQuery = `
         select 
-            eu.ers_user_id,
+            eu.ers_user_id as id,
             eu.username,
             eu.password,
             eu.first_name,
             eu.last_name,
             eu.email,
-        ro.role_name as role_name
+            ro.role_name as role_name
         from ers_users eu 
         join ers_user_roles ro 
         on eu.user_role_id = ro.role_id                 
     `;
     
     /**
-     * 
+     * gets all users 
+     * @returns an array of all users
      */
     async getAll(): Promise<User[]> {
 
@@ -34,7 +33,7 @@ export class UserRepository implements CrudRepository<User> {
         try {
             client = await connectionPool.connect();
             let sql = `${this.baseQuery} order by eu.ers_user_id`;
-            let rs = await client.query(sql); //rs stands for ResultSet
+            let rs = await client.query(sql); 
             return rs.rows.map(mapUserResultSet);
         } catch (e) {
             throw new InternalServerError();
@@ -44,8 +43,9 @@ export class UserRepository implements CrudRepository<User> {
     }       
 
     /**
-     * 
+     * gets the user that matches the provided Id
      * @param id 
+     * @returns the user object who matches the provided id
      */
     async getById(id: number): Promise<User> {
         let client: PoolClient;
@@ -62,9 +62,10 @@ export class UserRepository implements CrudRepository<User> {
     }
     
     /**
-     * 
+     * gets an user that matches the key and val provided
      * @param key 
      * @param val 
+     * @returns an user object that matches the provided params
      */
     async getUserByUniqueKey(key: string, val: string): Promise<User> {
         let client: PoolClient;
@@ -72,7 +73,12 @@ export class UserRepository implements CrudRepository<User> {
         try {
             client = await connectionPool.connect();
             let sql = `${this.baseQuery} where eu.${key} = $1`;
+
+            console.log('b4 rs');
             let rs = await client.query(sql, [val]);
+            
+            console.log('after rs');
+
             return mapUserResultSet(rs.rows[0]);
         } catch (e) {
             throw new InternalServerError();
@@ -82,9 +88,10 @@ export class UserRepository implements CrudRepository<User> {
     }
 
     /**
-     * 
+     * gets user when provided a username and password
      * @param un 
      * @param pw 
+     * @returns user object that matches provided credentials
      */
     async getUserByCredentials(un: string, pw: string) {
         
@@ -104,8 +111,9 @@ export class UserRepository implements CrudRepository<User> {
     }
 
     /**
-     * 
+     * adds a new user to the database
      * @param newUser 
+     * @returns new user
      */
     async save(newUser: User): Promise<User> {
             
@@ -136,16 +144,16 @@ export class UserRepository implements CrudRepository<User> {
     }
 
     /**
-     * 
+     * updates an existing user matching the provided id
      * @param updatedUser 
+     * @returns true
      */
     async update(updatedUser: User): Promise<boolean> {
         
         let client: PoolClient;
 
-        let role_id = (await client.query('select id from ers_roles where role_name = $1', [updatedUser.role_name])).rows[0].role_id;
-
-
+        let role_id = (await client.query('select role_id from ers_roles where role_name = $1', [updatedUser.role_name])).rows[0].ers_role_id;
+        
         try {
             client = await connectionPool.connect();
             let sql = `update ers_users set (first_name, last_name, username, 
@@ -164,8 +172,9 @@ export class UserRepository implements CrudRepository<User> {
     }
 
     /**
-     * 
+     * deletes the user that matches the provided id
      * @param id 
+     * @returns true
      */
     async deleteById(id: number): Promise<boolean> {
 

@@ -10,7 +10,7 @@ import {
 
 
 /**
- * 
+ * a class with crud functionality for users
  */
 export class UserService {
     constructor(private userRepo: UserRepository) {
@@ -18,7 +18,8 @@ export class UserService {
     }
 
     /**
-     * 
+     * gets all users
+     * @returns all users in the database
      */
     async getAllUsers(): Promise<User[]> {
 
@@ -31,8 +32,9 @@ export class UserService {
     }
 
     /**
-     * 
+     * gets user by their Id
      * @param id 
+     * @returns user object sans the password
      */
     async getUserById(id: number): Promise<User> {
         if (!isValidId(id)) {
@@ -50,8 +52,9 @@ export class UserService {
     }
 
     /**
-     * 
+     * gets user when provided a unique key and value
      * @param queryObj 
+     * @returns User without password
      */
     async getUserByUniqueKey(queryObj: any): Promise<User> {
 
@@ -71,12 +74,8 @@ export class UserService {
                 return await this.getUserById(+val);
             }
 
-            // throw error if key value is not valid
-            if(!isValidId(val)) {
-                throw new BadRequestError();
-            }
-
             let user = await this.userRepo.getUserByUniqueKey(key, val);
+            console.log(user);
             
             if(isEmptyObject(user)) {
                 throw new ResourceNotFoundError();
@@ -90,9 +89,10 @@ export class UserService {
     }
 
     /**
-     * 
+     * authenticates user to for login
      * @param un 
      * @param pw 
+     * @returns authenticated user sans password
      */
     async authenticateUser(un: string, pw: string): Promise<User> {
 
@@ -121,8 +121,9 @@ export class UserService {
     }
 
     /**
-     * 
+     * adds a new user
      * @param newUser 
+     * @returns newUser
      */
     async addNewUser(newUser: User): Promise<User> {
         
@@ -159,8 +160,9 @@ export class UserService {
     }
 
     /**
-     * 
+     * Updates exxisting user
      * @param updatedUser 
+     * @returns updated user
      */
     async updateUser(updatedUser: User): Promise<boolean> {
         
@@ -178,8 +180,9 @@ export class UserService {
     }
 
     /**
-     * 
+     * deletes user with the provided Id
      * @param id 
+     * @returns true
      */
     async deleteUserById(id: number): Promise<boolean> {
         
@@ -194,8 +197,9 @@ export class UserService {
     }
 
     /**
-     * 
+     * checks if username is in use
      * @param username 
+     * @returns true if username is available or false if username is not available
      */
     private async isUsernameAvailable(username: string): Promise<boolean> {
 
@@ -212,8 +216,9 @@ export class UserService {
     }
 
     /**
-     * 
+     * checks if email has been taken
      * @param email 
+     * @returns true if email is available or false if it is not
      */
     private async isEmailAvailable(email: string): Promise<boolean> {
         
@@ -229,8 +234,9 @@ export class UserService {
     }
 
     /**
-     * 
+     * removes password from the returned object
      * @param user 
+     * @returns user without password
      */
     private removePassword(user: User): User {
         if (!user || !user.password) return user;

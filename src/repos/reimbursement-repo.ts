@@ -5,29 +5,41 @@ import { PoolClient } from 'pg';
 import { connectionPool } from '..';
 import { mapReimbursementResultSet } from '../util/result-set-mapper';
 
-/**
- * 
- */
+
 export class ReimbursementRepository implements CrudRepository<Reimbursement> {
 
     baseQuery = `
-        select
-            er.id, 
-            er.amount, 
-            er.submitted, 
-            er.resolved,
-            er.description,
-            er.receipt,
-            er.author_id,
-            er.resolver_id,
-            er.reimb_status_id,
-            er.reimb_type_id
-        from ers_reimbursements er
+    select
+    er.reimb_id as id, 
+    er.amount, 
+    er.submitted, 
+    er.resolved,
+    er.description,
+    er.receipt, 
+    eu.username as author,
+    eu2.username as resolver,
+    ers.reimb_status as reimb_status,
+    ert.reimb_type as reimb_status          
+
+    from ers_reimbursements er
+
+    left join ers_users eu
+    on eu.ers_user_id = er.author_id
+    
+    left join ers_users eu2
+    on eu2.ers_user_id = er.resolver_id
+    
+    left join ers_reimbursement_statuses ers
+    on ers.reimb_status_id = er.reimb_status_id
+
+    left join ers_reimbursement_types ert
+    on ert.reimb_type_id = er.reimb_type_id                
     `;
     
-    /**
-     * 
-     */
+  /**
+   * gets all reimbursements
+   * @returns all reimbursements
+   */
     async getAll(): Promise<Reimbursement[]> {
 
         let client: PoolClient;
@@ -51,8 +63,9 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
     }
     
     /**
-     * 
+     * gets a reimbursement by its Id
      * @param id 
+     * @returns reimbursement by id
      */
     async getById(id: number): Promise<Reimbursement> {
         let client: PoolClient;
@@ -74,26 +87,32 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
     }
 
     /**
-     * 
-     * @param newReimbursement 
+     * adds a new reimbursement to the database
+     * @param newReimbursement
+     * @returns the added reimbursement 
      */
     async save(newReimbursement: Reimbursement): Promise<Reimbursement> {
         let client: PoolClient;
 
         try {
             client = await connectionPool.connect();
-            
+
+            let reimb_type_id = (await client.query('select reimb_type_id from ers_reimbursement_types where reimb_type = $1', [newReimbursement.reimb_type])).rows[0].reimb_type_id;
+            let author_id = (await client.query('select ers_user_id from ers_users where username = $1', [newReimbursement.author])).rows[0].ers_user_id;
+
+            // console.log(author_id);
+            // console.log(reimb_type_id);
+
             let sql = `
-                insert into ers_reimbursements (amount, submitted, resolved, description, receipt, 
-                    author_id, resolver_id, reimb_status_id, reimb_type_id) 
-                values ($1, $2, $3, $4, $5, $6, $7, $8, $9) returning id
+                insert into ers_reimbursements 
+                (amount, description, receipt, author_id, reimb_type_id) 
+                values ($1, $2, $3, $4, $5) returning id
             `;
             
-            let rs = await client.query(sql, [newReimbursement.amount, newReimbursement.submitted, 
-                                            newReimbursement.resolved, newReimbursement.description, 
-                                            newReimbursement.receipt, newReimbursement.author, 
-                                            newReimbursement.resolver, newReimbursement.reimb_status_id, 
-                                            newReimbursement.reimb_type_id]);
+            let rs = await client.query(sql, [newReimbursement.amount, newReimbursement.description, 
+                                        newReimbursement.receipt, author_id, reimb_type_id]);
+            console.log(rs);
+            
             return mapReimbursementResultSet(rs.rows[0]);
 
         } catch (e) {
@@ -104,17 +123,33 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
     }
 
     /**
-     * 
+     * gets a reimbursement by unique key
      * @param key 
      * @param val 
+     * @returns a reimbursement that matches the provided key and val
      */
     async getReimbursementByUniqueKey(key: string, val: string): Promise<Reimbursement> {
         let client: PoolClient;
-        
+
         try {
             client = await connectionPool.connect();
-            let sql = `${this.baseQuery} where eu.${key} = $1`;
-            let rs = await client.query(sql, [val]);
+
+            let val1;
+            val1 = val;
+            if(key === 'author') {
+                key = 'author_id'
+                val1 = (await client.query(`select eu.ers_user_id from ers_users eu where username = $1`, [val])).rows[0].ers_user_id;
+            }
+            if(key === 'resolver') {
+                key = 'resolver_id'
+                val1 = (await client.query(`select eu.ers_user_id from ers_users eu where username = $1`, [val])).rows[0].ers_user_id;
+            }
+            //console.log(val1)
+            
+            let sql = `${this.baseQuery} where er.${key} = $1`;
+          
+            
+            let rs = await client.query(sql, [val1]);
             return mapReimbursementResultSet(rs.rows[0]);
         } catch (e) {
             throw new InternalServerError();
@@ -124,8 +159,9 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
     }
 
     /**
-     * 
+     * updates an existing reimbursement
      * @param updatedReimbursement 
+     * @returns the reimbursement with its values updated
      */
     async update(updatedReimbursement: Reimbursement): Promise<boolean> {
         let client: PoolClient;
@@ -133,18 +169,22 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
         try {
             client = await connectionPool.connect();
             
+            let reimb_type_id = (await client.query('select reimb_type_id from ers_reimbursement_types where reimb_type = $1', [updatedReimbursement.reimb_type])).rows[0].reimb_type_id;
+            let author_id = (await client.query('select ers_user_id from ers_users where username = $1', [updatedReimbursement.author])).rows[0].ers_user_id;
+            let reimb_status_id = (await client.query('select reimb_status_id from ers_reimbursement_statuses where reimb_status = $1', [updatedReimbursement.reimb_status])).rows[0].reimb_status_id;
+            let resolver_id = (await client.query('select ers_user_id from ers_users where username = $1', [updatedReimbursement.resolver])).rows[0].ers_user_id;
+
             let sql = `
                 update ers_reimbursement
-                    set amount = $2, submitted = $3, resolved = $4, description = $5, receipt = $6,
-                    author_id = $7, resolver_id = $8, reimb_status_id = $9, reimb_type_id = $10
-                where ers_reimbursement.reimb_id = $1;
+                    set amount = $1, resolved = $2, description = $3, receipt = $4,
+                    resolver_id = $5, reimb_status_id = $6, reimb_type_id = $7 where reimb_id = ${updatedReimbursement.id}
             `;
 
-            await client.query(sql, [updatedReimbursement.amount, updatedReimbursement.submitted, 
-                                    updatedReimbursement.resolved, updatedReimbursement.description, 
-                                    updatedReimbursement.receipt, updatedReimbursement.author, 
-                                    updatedReimbursement.resolver, updatedReimbursement.reimb_status_id, 
-                                    updatedReimbursement.reimb_type_id]);
+            await client.query(sql, [updatedReimbursement.amount,
+                                    new Date(), updatedReimbursement.description, 
+                                    updatedReimbursement.receipt, 
+                                    resolver_id, reimb_status_id,
+                                    reimb_type_id]);
             return true;
 
         } catch (e) {
@@ -155,8 +195,9 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
     }
 
     /**
-     * 
+     * deletes a reimbursement with the provided Id
      * @param id 
+     * @returns true
      */
     async deleteById(id: number): Promise<boolean> {
         
@@ -165,9 +206,7 @@ export class ReimbursementRepository implements CrudRepository<Reimbursement> {
         try {
             client = await connectionPool.connect();
             let sql = `delete from ers_reimbursements where reimb_id = $1`;
-
             await client.query(sql, [id]);
-
             return true;
 
         } catch (e) {
