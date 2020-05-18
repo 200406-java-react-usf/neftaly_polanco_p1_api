@@ -20,4 +20,4 @@ artifacts:
     - node_modules/**/*
     - ./build/**/*
     - package.json
-    - .vsccode/**/*
+    #- .vsccode/**/*
