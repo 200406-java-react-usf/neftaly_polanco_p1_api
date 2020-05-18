@@ -44,7 +44,7 @@ export function mapReimbursementResultSet(resultSet: ReimbursementSchema): Reimb
         resultSet.receipt,
         resultSet.author,
         resultSet.resolver,
-        resultSet.reimb_status_id,
-        resultSet.reimb_type_id
+        resultSet.reimb_status,
+        resultSet.reimb_type
     );
 }
