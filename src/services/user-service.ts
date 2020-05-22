@@ -75,7 +75,7 @@ export class UserService {
             }
 
             let user = await this.userRepo.getUserByUniqueKey(key, val);
-            console.log(user);
+            //console.log(user);
             
             if(isEmptyObject(user)) {
                 throw new ResourceNotFoundError();
@@ -148,7 +148,7 @@ export class UserService {
                 throw new  ResourcePersistenceError('The provided email is already taken.');
             }
             
-            newUser.role_name = 'Staff'; // all new registers have 'staff' role by default
+            //newUser.role_name = 'EMPLOYEE'; // all new registers have 'staff' role by default
             const persistedUser = await this.userRepo.save(newUser);
 
             return this.removePassword(persistedUser);

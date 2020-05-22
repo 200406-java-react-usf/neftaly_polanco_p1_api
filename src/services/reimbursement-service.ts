@@ -95,6 +95,15 @@ export class ReimbursementService {
         }
     }
 
+    async filterReimb(query: any): Promise<Reimbursement[]> {
+        
+        let status = query.status;
+        let type = query.type;
+        let reimbs = await this.reimbursementRepo.getReimbursementByFilter(status, type);
+
+        return reimbs;
+    }
+
     /**
      * adds new reimbursement
      * @param newReimbursement 
@@ -124,12 +133,15 @@ export class ReimbursementService {
      * @returns updatedReimbursement
      */
     async updateReimbursement(updatedReimbursement: Reimbursement): Promise<boolean> {
-        
-        if (!isValidObject(updatedReimbursement)) {
-            throw new BadRequestError('Invalid reimbursement provided.');
+        try {
+            if (!isValidObject(updatedReimbursement)) {
+                throw new BadRequestError('Invalid reimbursement provided.');
+            }
+            
+            return await this.reimbursementRepo.update(updatedReimbursement);
+        } catch (e) {
+            throw e;
         }
-        
-        return await this.reimbursementRepo.update(updatedReimbursement);
 
     }
 

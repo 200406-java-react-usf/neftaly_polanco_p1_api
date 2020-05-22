@@ -5,14 +5,14 @@ export class Reimbursement {
     submitted: Date;
     resolved: Date;
     description: string;
-    receipt: number;
+    receipt: string;
     author: string;
     resolver: string;
     reimb_status: string;
     reimb_type: string;
 
     constructor(id: number, amount: number, submitted: Date, resolved: Date, description: string,
-                receipt: number, author: string, resolver: string,  reimb_status: string, reimb_type: string) {
+                receipt: string, author: string, resolver: string,  reimb_status: string, reimb_type: string) {
 
         this.id = id;
         this.amount = amount;

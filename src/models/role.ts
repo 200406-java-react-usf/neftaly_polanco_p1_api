@@ -1,37 +1,37 @@
 export class Role {
     
-    id: number;
-    name: string;
+    role_id: number;
+    role_name: string;
 
     constructor(init: number | string) {
 
         if (typeof init === 'number') {
-            this.id = init;
+            this.role_id = init;
             switch (init) {
-                case 1: this.name = 'Admin'; break;
-                case 2: this.name = 'staff'; break;
-                case 3: this.name = 'User'; break;
+                case 1: this.role_name = 'ADMIN'; break;
+                case 2: this.role_name = 'FINANCIAL MANAGER'; break;
+                case 3: this.role_name = 'EMPLOYEE'; break;
                 default: 
-                    this.id = 4;
-                    this.name = 'Locked';
+                    this.role_id = 4;
+                    this.role_name = 'Locked';
             }
         } 
         
         else if (typeof init === 'string') {
-            this.name = init;
+            this.role_name = init;
             switch (init.toLowerCase()) {
-                case 'admin': this.id = 1; break;
-                case 'staff': this.id = 2; break;
-                case 'user': this.id = 3; break;
+                case 'ADMIN': this.role_id = 1; break;
+                case 'FINANCIAL MANAGER': this.role_id = 2; break;
+                case 'EMPLOYEE': this.role_id = 3; break;
                 default: 
-                    this.id = 4;
-                    this.name = 'Locked';
+                    this.role_id = 4;
+                    this.role_name = 'Locked';
             }
         } 
         
         else {
-            this.id = 4;
-            this.name = 'Locked';
+            this.role_id = 4;
+            this.role_name = 'Locked';
         }
 
     }

@@ -3,8 +3,7 @@ import { CrudRepository } from './crud-repo';
 import { InternalServerError } from '../errors/errors';
 import { PoolClient } from 'pg';
 import { connectionPool } from '..';
-import { mapUserResultSet } from '../util/result-set-mapper';
-
+import { mapUserResultSet,  } from '../util/result-set-mapper';
 
 export class UserRepository implements CrudRepository<User> {
 
@@ -74,10 +73,10 @@ export class UserRepository implements CrudRepository<User> {
             client = await connectionPool.connect();
             let sql = `${this.baseQuery} where eu.${key} = $1`;
 
-            console.log('b4 rs');
+            //console.log('b4 rs');
             let rs = await client.query(sql, [val]);
             
-            console.log('after rs');
+            //console.log('after rs');
 
             return mapUserResultSet(rs.rows[0]);
         } catch (e) {
@@ -86,6 +85,9 @@ export class UserRepository implements CrudRepository<User> {
             client && client.release();
         }
     }
+
+    /**
+   
 
     /**
      * gets user when provided a username and password
@@ -122,15 +124,19 @@ export class UserRepository implements CrudRepository<User> {
         try {
             client = await connectionPool.connect();
 
-            let role_id = (await client.query('select role_id from ers_user_roles where role_name = $1', [newUser.role_name])).rows[0].role_id;
+            //let role_id = (await client.query('select role_id from ers_user_roles where role_name = $1', [newUser.role_name])).rows[0].role_id;
 
+            //console.log(role_id);
+            console.log('here')
             let sql = `insert into ers_users (username, password, first_name, last_name, email, user_role_id) 
-                values ($1, $2, $3, $4, $5, $6) returning ers_user_id ` ;
+            values ($1, $2, $3, $4, $5, ( select role_id from ers_user_roles where role_name = $6 ) )` ;
+
+                console.log('here too');
 
             let rs = (await client.query(sql, [newUser.username, newUser.password, 
-                newUser.firstName, newUser.lastName,  
-                newUser.email, role_id]));
+                newUser.first_name, newUser.last_name, newUser.email, newUser.role_name]));
 
+                console.log('also here')
             newUser.role_name = rs.rows[0].role_name;
 
             return newUser;
@@ -156,11 +162,11 @@ export class UserRepository implements CrudRepository<User> {
         
         try {
             client = await connectionPool.connect();
-            let sql = `update ers_users set (first_name, last_name, username, 
-                password, email, user_role_id) = ($1, $2, $3, $4, $5, $6) where ers_user_id = ${updatedUser}.id`;
+            let sql = `update ers_users set (username, password, first_name, last_name, 
+                 email, user_role_id) = ($1, $2, $3, $4, $5, $6) where ers_user_id = ${updatedUser}.id`;
                 
             let rs = await client.query(sql, [updatedUser.username, updatedUser.password, 
-                updatedUser.firstName, updatedUser.lastName, updatedUser.email, role_id]);
+                updatedUser.first_name, updatedUser.last_name, updatedUser.email, role_id]);
 
             return true;
             

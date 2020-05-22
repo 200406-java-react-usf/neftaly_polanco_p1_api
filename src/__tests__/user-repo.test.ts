@@ -2,6 +2,7 @@ import { UserRepository } from '../repos/user-repo';
 import * as mockIndex from '..';
 import * as mockMapper from '../util/result-set-mapper';
 import { User } from '../models/user';
+import { InternalServerError } from '../errors/errors';
 
 /*
     We need to mock the connectionPool exported from the main module
@@ -18,7 +19,7 @@ jest.mock('..', () => {
 });
 
 // The result-set-mapper module also needs to be mocked
-jest.mock('../util/user-result-set-mapper', () => {
+jest.mock('../util/result-set-mapper', () => {
     return {
         mapUserResultSet: jest.fn()
     }
@@ -100,6 +101,26 @@ describe('userRepo', () => {
 
     });
 
+    test('should throw InternalServerError when getAll() is called but query is unsuccesful', async () => {
+
+        // Arrange
+        expect.hasAssertions();
+        (mockConnect as jest.Mock).mockImplementation( () => {
+            return {
+                query: jest.fn().mockImplementation( () => { throw new Error(); }),
+                release: jest.fn()
+            };
+        });
+
+        // Act
+        try {
+            await sut.getAll();
+        } catch (e) {
+            // Assert
+            expect(e instanceof InternalServerError).toBe(true);
+        }
+    });
+
     test('should resolve to a User object when getById retrieves a record from data source', async () => {
 
         // Arrange
@@ -115,6 +136,27 @@ describe('userRepo', () => {
         expect(result).toBeTruthy();
         expect(result instanceof User).toBe(true);
 
+    });
+
+    test('should throw InternalServerError when getById() is called but query is unsuccesful', async () => {
+
+        // Arrange
+        expect.hasAssertions();
+        let mockUser = new User(1, 'un', 'pw', 'fn', 'ln', 'email', 'role');
+        (mockConnect as jest.Mock).mockImplementation( () => {
+            return {
+                query: jest.fn().mockImplementation( () => { return false; }),
+                release: jest.fn()
+            };
+        });
+
+        // Act
+        try {
+            await sut.getById(mockUser.id);
+        } catch (e) {
+            // Assert
+            expect(e instanceof InternalServerError).toBe(true);
+        }
     });
 
     test('should resolve to a User object when getUserByCredentials retrieves a record from data source', async () => {
