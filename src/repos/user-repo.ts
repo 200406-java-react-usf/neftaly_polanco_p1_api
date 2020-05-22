@@ -134,7 +134,7 @@ export class UserRepository implements CrudRepository<User> {
                 console.log('here too');
 
             let rs = (await client.query(sql, [newUser.username, newUser.password, 
-                newUser.firstName, newUser.lastName, newUser.email, newUser.role_name]));
+                newUser.first_name, newUser.last_name, newUser.email, newUser.role_name]));
 
                 console.log('also here')
             newUser.role_name = rs.rows[0].role_name;
@@ -166,7 +166,7 @@ export class UserRepository implements CrudRepository<User> {
                  email, user_role_id) = ($1, $2, $3, $4, $5, $6) where ers_user_id = ${updatedUser}.id`;
                 
             let rs = await client.query(sql, [updatedUser.username, updatedUser.password, 
-                updatedUser.firstName, updatedUser.lastName, updatedUser.email, role_id]);
+                updatedUser.first_name, updatedUser.last_name, updatedUser.email, role_id]);
 
             return true;
             
