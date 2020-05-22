@@ -2,7 +2,7 @@ import url from 'url';
 import express from 'express';
 import AppConfig from '../config/app';
 import { isEmptyObject } from '../util/validator';
-import { adminGuard, FMGuard } from '../middleware/auth-middleware';
+import { adminGuard, FMGuard, EmpGuard } from '../middleware/auth-middleware';
 
 export const ReimbursementRouter = express.Router();
 
@@ -35,7 +35,7 @@ ReimbursementRouter.get('/:id', async (req, resp) => {
         let payload = await reimbursementService.getReimbursementById(id);
         return resp.status(200).json(payload);
     } catch (e) {
-        return resp.status(e.statusCode).json(e).send();
+        return resp.status(e.statusCode).json(e);
     }
 });
 
@@ -57,31 +57,31 @@ ReimbursementRouter.post('', async (req, resp) => {
 /**
  * 
  */
-ReimbursementRouter.put('/:id', FMGuard, async (req, resp) => {
+ReimbursementRouter.put('', async (req, resp) => {
     const id = +req.params.id;
 
     console.log('REIMBURSEMENT UPDATE REQUEST RECEIVED AT /reimbursements');
-    console.log(req.body);
+    //console.log(req.body);
     try {
         let status = await reimbursementService.updateReimbursement(req.body);
-        return resp.status(204).json(status).send();
+        return resp.status(204).json(status);
     } catch (e) {
-        return resp.status(e.statusCode).json(e).send();
+        return resp.status(e.statusCode).json(e);
     }
 });
 
 /**
- * 
+ * routing to the the delete method
  */
-ReimbursementRouter.delete('/:id', FMGuard, async (req, resp) => {
+ReimbursementRouter.delete('/:id', async (req, resp) => {
     const id = +req.params.id;
 
     console.log('REIMBURSEMENT DELETE REQUEST RECEIVED AT /reimbursements');
     console.log(req.body);
     try {
         let status = await reimbursementService.deleteById(id);
-        return resp.status(204).json(status).send();
+        return resp.status(204).json(status);
     } catch (e) {
-        return resp.status(e.statusCode).json(e).send();
+        return resp.status(e.statusCode).json(e);
     }
 });
